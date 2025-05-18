@@ -6,6 +6,6 @@ interface PageProps {
 }
 
 export default async function DashboardPage({ params }: PageProps) {
-  const data = await fetchCharityData(params.address);
-  return <ReceiverDashboard initialData={data} />;
+  const data = await fetchCharityData(params.address).catch((error) => {console.log(error)});
+  return <ReceiverDashboard initialData={data || {charity: {address: '', name: '', description:'', totalReceived: 0, verified: false}, donations: []}} />;
 }

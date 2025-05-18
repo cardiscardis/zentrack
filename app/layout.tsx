@@ -1,37 +1,47 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import { Poppins } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
-import { AuthProvider } from "@/hooks/use-auth"
+'use client';
 
+import type React from "react";
+import { Inter, Poppins } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/hooks/use-auth";
+import { baseSepolia } from 'viem/chains';
+import { createConfig, WagmiProvider } from 'wagmi';
+import { http } from 'viem';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { OnchainKitProvider } from '@coinbase/onchainkit';
+import {config} from '../lib/wagmi'
+const queryClient = new QueryClient();
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "ZenPay - One-Click On-Chain Recurring Payments",
-  description:
-    "Simplify your crypto subscriptions with ZenPay. Set up recurring payments on Base blockchain with just one click.",
-    generator: 'v0.dev'
-}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className={poppins.className}>
+        {/* Uncomment ThemeProvider if needed */}
         {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange> */}
-          <AuthProvider>
-            {children}
-            <Toaster />
-          </AuthProvider>
+          
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <OnchainKitProvider
+              chain={baseSepolia}
+              appName="Your App"
+              appIcon="/favicon.ico"
+            >
+              <AuthProvider>
+                {children}
+                <Toaster />
+              </AuthProvider>
+            </OnchainKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
         {/* </ThemeProvider> */}
       </body>
     </html>
-  )
+  );
 }

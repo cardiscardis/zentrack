@@ -23,11 +23,15 @@ export async function fetchCharityData(address: string): Promise<{
   charity: Charity;
   donations: Donation[];
 }> {
+  if (!address) {
+    return {charity: {address: '', name: '', description:'', totalReceived: 0, verified: false}, donations: []}
+  }
   const charityRef = doc(db, 'charities', address);
   const charitySnapshot = await getDoc(charityRef);
 
   if (!charitySnapshot.exists()) {
-    throw new Error('Charity not found');
+    console.log('Charity not found');
+    return {charity: {address: '', name: '', description:'', totalReceived: 0, verified: false}, donations: []}
   }
 
   const donationsRef = collection(db, 'donations');

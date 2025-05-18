@@ -1,4 +1,12 @@
-import { adminDb } from './lib/adminConfig';
+// app/api/get-donations/route.ts
+import { db } from '../../config';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+} from 'firebase/firestore';
 import { Donation } from '../types';
 import { NextResponse } from 'next/server';
 
@@ -14,10 +22,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const snapshot = await adminDb.collection('donations')
-      .where('charityAddress', '==', address)
-      .orderBy('timestamp', 'desc')
-      .get();
+    const q = query(
+      collection(db, 'donations'),
+      where('charityAddress', '==', address),
+      orderBy('timestamp', 'desc')
+    );
+
+    const snapshot = await getDocs(q);
 
     const donations: Donation[] = snapshot.docs.map(doc => {
       const data = doc.data();
@@ -26,7 +37,7 @@ export async function GET(request: Request) {
         charityAddress: data.charityAddress,
         amount: data.amount,
         isSubscription: data.isSubscription,
-        timestamp: data.timestamp.toDate(),
+        timestamp: data.timestamp.toDate?.() ?? new Date(data.timestamp),
         txHash: data.txHash,
       };
     });
@@ -41,4 +52,4 @@ export async function GET(request: Request) {
   }
 }
 
-export const dynamic = 'force-dynamic'; // Ensure dynamic server-side evaluation
+export const dynamic = 'force-dynamic';

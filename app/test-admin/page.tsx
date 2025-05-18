@@ -5,8 +5,8 @@ import { ethers } from 'ethers';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { toast } from 'react-toastify';
-import DonationContractABI from '../../../abis/DonationContractABI.json';
-import { Charity, Donation } from '../../../types';
+import DonationContractABI from '../../lib/abis/DonationContractABI.json';
+import { Charity, Donation } from '../types';
 import { useOnchainKit } from '@coinbase/onchainkit';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
